@@ -46,18 +46,16 @@
   </form>
 
   <script>
-    const form = document.querySelector("form");
-    const input = document.getElementById("q");
+  const form = document.querySelector("form");
+  const input = document.getElementById("q");
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!input.value) return;
-      window.open(
-        "https://www.google.com/search?q=" + encodeURIComponent(input.value),
-        "_blank"
-      );
-    });
-  </script>
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!input.value) return;
 
-</body>
-</html>
+    window.location.href =
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(input.value);
+  });
+</script>
+
