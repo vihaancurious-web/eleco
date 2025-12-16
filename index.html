@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eleco</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #f9fafb;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .logo img {
+      width: 48px;
+      height: 48px;
+    }
+    input {
+      width: 300px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco Robot">
+    <h1>Eleco</h1>
+  </div>
+
+  <form>
+    <input id="q" type="text" placeholder="Search Eleco..." />
+  </form>
+
+  <script>
+    const form = document.querySelector("form");
+    const input = document.getElementById("q");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!input.value) return;
+      window.open(
+        "https://www.google.com/search?q=" + encodeURIComponent(input.value),
+        "_blank"
+      );
+    });
+  </script>
+
+</body>
+</html>
