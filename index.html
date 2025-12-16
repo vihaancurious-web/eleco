@@ -1,61 +1,65 @@
+
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Eleco</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      margin: 0;
       background: #f9fafb;
     }
-    .logo {
+    header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 10px;
+      padding: 16px;
     }
-    .logo img {
-      width: 48px;
-      height: 48px;
+    header img {
+      width: 36px;
+      height: 36px;
     }
     input {
-      width: 300px;
-      padding: 12px;
+      flex: 1;
+      padding: 12px 16px;
       font-size: 16px;
       border-radius: 999px;
       border: 1px solid #ccc;
       outline: none;
     }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 80px);
+      border: none;
+    }
   </style>
 </head>
 <body>
 
-  <div class="logo">
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco Robot">
-    <h1>Eleco</h1>
-  </div>
+<header>
+  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png">
+  <input id="q" placeholder="Search Eleco..." />
+</header>
 
-  <form>
-    <input id="q" type="text" placeholder="Search Eleco..." />
-  </form>
+<iframe id="results"></iframe>
 
-  <script>
-  const form = document.querySelector("form");
+<script>
   const input = document.getElementById("q");
+  const frame = document.getElementById("results");
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!input.value) return;
-
-    window.location.href =
-      "https://www.google.com/search?q=" +
-      encodeURIComponent(input.value);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value) {
+      frame.src =
+        "https://duckduckgo.com/html/?q=" +
+        encodeURIComponent(input.value);
+    }
   });
 </script>
+
+</body>
+</html>
+
 
