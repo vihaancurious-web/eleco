@@ -84,6 +84,32 @@
         `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${query}&format=json&origin=*`
       );
       const data = await res.json();
+// 🎤 Voice input (Speech to Text)
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US"; // change to "hi-IN" for Hindi
+  recognition.continuous = false;
+
+  speakBtn.innerHTML = "🎤";
+
+  speakBtn.onclick = () => {
+    recognition.start();
+  };
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    input.value = text;
+
+    // auto-search after speaking
+    const enterEvent = new KeyboardEvent("keydown", { key: "Enter" });
+    input.dispatchEvent(enterEvent);
+  };
+} else {
+  speakBtn.innerHTML = "❌";
+}
 
       results.innerHTML = "";
 
