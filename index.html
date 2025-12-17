@@ -1,5 +1,8 @@
 
     
+
+
+     
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,10 +33,20 @@
       border: 1px solid #ccc;
       outline: none;
     }
-    iframe {
-      width: 100%;
-      height: calc(100vh - 80px);
-      border: none;
+    #results {
+      padding: 16px;
+    }
+    .item {
+      margin-bottom: 14px;
+    }
+    .item a {
+      font-size: 18px;
+      color: #1a0dab;
+      text-decoration: none;
+    }
+    .item p {
+      margin: 4px 0 0;
+      color: #555;
     }
   </style>
 </head>
@@ -44,24 +57,41 @@
   <input id="q" placeholder="Search Eleco..." />
 </header>
 
-<iframe id="results"></iframe>
+<div id="results"></div>
 
 <script>
   const input = document.getElementById("q");
-  const frame = document.getElementById("results");
+  const results = document.getElementById("results");
 
-  input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", async (e) => {
     if (e.key === "Enter" && input.value) {
-     frame.src =
-  "https://www.bing.com/search?q=" +
-  encodeURIComponent(input.value) +
-  "&form=MSNVS&setlang=en";
+      results.innerHTML = "Searching...";
+      const query = encodeURIComponent(input.value);
 
+      const res = await fetch(
+        `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${query}&format=json&origin=*`
+      );
+      const data = await res.json();
+
+      results.innerHTML = "";
+
+      data.query.search.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}" target="_blank">
+            ${item.title}
+          </a>
+          <p>${item.snippet}...</p>
+        `;
+        results.appendChild(div);
+      });
     }
   });
 </script>
 
 </body>
 </html>
+
 
 
