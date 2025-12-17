@@ -141,7 +141,7 @@ if (SpeechRecognition) {
 
     // auto-search
     const enterEvent = new KeyboardEvent("keydown", { key: "Enter" });
-    input.dispatchEvent(enterEvent);
+    input.enterEvent(enterEvent);
   };
 } else {
   micBtn.innerText = "❌";
