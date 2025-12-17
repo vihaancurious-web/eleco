@@ -57,7 +57,18 @@
   <input id="q" placeholder="Search Eleco..." />
 </header>
 
-<div id="results"></div>
+<button id="mic" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 14px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+">
+🎤
+</button>
+
 <button id="speak" style="
   position: fixed;
   bottom: 20px;
@@ -109,6 +120,31 @@ if (SpeechRecognition) {
   };
 } else {
   speakBtn.innerHTML = "❌";
+}
+// 🎤 Voice input
+const micBtn = document.getElementById("mic");
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US"; // use "hi-IN" for Hindi
+  recognition.continuous = false;
+
+  micBtn.onclick = () => {
+    recognition.start();
+  };
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    input.value = text;
+
+    // auto-search
+    const enterEvent = new KeyboardEvent("keydown", { key: "Enter" });
+    input.dispatchEvent(enterEvent);
+  };
+} else {
+  micBtn.innerText = "❌";
 }
 
       results.innerHTML = "";
