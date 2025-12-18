@@ -1,39 +1,36 @@
-
-    
-
-
-     
-
-     
-
-
-    
-
-
-  
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Eleco</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background: #f9fafb;
     }
+
     header {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       padding: 16px;
+      border-bottom: 1px solid #ddd;
     }
+
     header img {
       width: 36px;
       height: 36px;
     }
-    input {
+
+    header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    #q {
       flex: 1;
       padding: 12px 16px;
       font-size: 16px;
@@ -41,98 +38,144 @@
       border: 1px solid #ccc;
       outline: none;
     }
+
     #results {
       padding: 16px;
     }
+
     .item {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
+
     .item a {
       font-size: 18px;
       color: #1a0dab;
       text-decoration: none;
     }
+
     .item p {
       margin: 4px 0 0;
       color: #555;
     }
+
+    #mic {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 14px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+    }
   </style>
 </head>
+
 <body>
 
-<header>
-  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png">
-  <input id="q" placeholder="Search Eleco..." />
-</header>
+  <header>
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco Robot">
+    <h1>Eleco</h1>
+    <input id="q" placeholder="Search Eleco..." />
+  </header>
 
-<div id="results"></div>
+  <div id="results"></div>
 
-<script>
-<script>
-  const input = document.getElementById("q");
-  const results = document.getElementById("results");
-  const micBtn = document.getElementById("mic");
+  <button id="mic">🎤</button>
 
-  // 🔍 SEARCH (Wikipedia)
-  async function doSearch(text) {
-    results.innerHTML = "Searching...";
-    const query = encodeURIComponent(text);
+  <script>
+    const input = document.getElementById("q");
+    const results = document.getElementById("results");
+    const micBtn = document.getElementById("mic");
 
-    const res = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${query}&format=json&origin=*`
-    );
-    const data = await res.json();
+    async function searchWikipedia(text) {
+      results.innerHTML = "Searching...";
+      const query = encodeURIComponent(text);
 
-    results.innerHTML = "";
+      try {
+        const res = await fetch(
+          "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" +
+          query +
+          "&format=json&origin=*"
+        );
 
-    data.query.search.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `
-        <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}" target="_blank">
-          ${item.title}
-        </a>
-        <p>${item.snippet}...</p>
-      `;
-      results.appendChild(div);
-    });
-  }
+        const data = await res.json();
+        results.innerHTML = "";
 
-  // ⌨️ ENTER KEY SEARCH
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && input.value.trim()) {
-      doSearch(input.value);
+        if (!data.query.search.length) {
+          results.innerHTML = "No results found.";
+          return;
+        }
+
+        data.query.search.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}" target="_blank">
+              ${item.title}
+            </a>
+            <p>${item.snippet}...</p>
+          `;
+          results.appendChild(div);
+        });
+      } catch {
+        results.innerHTML = "Search failed.";
+      }
     }
-  });
 
-  // 🎤 VOICE INPUT
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Keyboard search
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && input.value.trim()) {
+        searchWikipedia(input.value.trim());
+      }
+    });
 
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US"; // change to hi-IN for Hindi
-    recognition.continuous = false;
+    // Voice input
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    micBtn.onclick = () => {
-      recognition.start();
-    };
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US"; // change to hi-IN for Hindi
+      recognition.continuous = false;
 
-    recognition.onresult = (event) => {
-      const text = event.results[0][0].transcript;
-      input.value = text;
-      doSearch(text);
-    };
-  } else {
-    micBtn.innerText = "❌";
-  }
-</script>
-  
-         
-</script>
+      micBtn.onclick = () => {
+        recognition.start();
+      };
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        input.value = text;
+        searchWikipedia(text);
+      };
+    } else {
+      micBtn.innerText = "❌";
+    }
+  </script>
 
 </body>
 </html>
 
+    
+
+
+     
+
+     
+
+
+    
+
+
+  
+ 
+
+    
+    
+
+
+   
+
+  
+         
 
 
