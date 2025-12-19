@@ -1,15 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Eleco</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: #f9fafb;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8f9fa;
+      color: #202124;
     }
 
     header {
@@ -17,7 +19,8 @@
       align-items: center;
       gap: 12px;
       padding: 16px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #dadce0;
+      background: white;
     }
 
     header img {
@@ -30,41 +33,68 @@
       margin: 0;
     }
 
-    #q {
-      flex: 1;
-      padding: 12px 16px;
+    #searchBox {
+      width: 100%;
+      padding: 12px 18px;
       font-size: 16px;
       border-radius: 999px;
-      border: 1px solid #ccc;
+      border: 1px solid #dadce0;
       outline: none;
+      margin: 16px;
+    }
+
+    #aiBox {
+      background: white;
+      padding: 16px;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    #aiBox h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    #aiBox select,
+    #aiBox input,
+    #aiBox button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    #aiResult {
+      margin-top: 12px;
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
 
     #results {
       padding: 16px;
     }
 
-    .item {
+    .result {
       margin-bottom: 16px;
     }
 
-    .item a {
+    .result a {
       font-size: 18px;
       color: #1a0dab;
       text-decoration: none;
     }
 
-    .item p {
+    .result p {
       margin: 4px 0 0;
-      color: #555;
+      color: #4d5156;
     }
 
-    #mic {
+    #micBtn {
       position: fixed;
       bottom: 20px;
       right: 20px;
+      font-size: 22px;
       padding: 14px;
       border-radius: 50%;
-      font-size: 20px;
       cursor: pointer;
     }
   </style>
@@ -72,202 +102,122 @@
 
 <body>
 
-  <header>
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco Robot">
-    <h1>Eleco</h1>
-    <input id="q" placeholder="Search Eleco..." />
-  </header>
-<div id="aiBox" style="padding:16px; border-bottom:1px solid #ddd;">
-  <h3>🤖 Eleco AI</h3>
+<header>
+  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco" />
+  <h1>Eleco</h1>
+</header>
 
+<input id="searchBox" placeholder="Search Eleco or ask something…" />
+
+<div id="aiBox">
+  <h2>🤖 Eleco AI (Smart Writer)</h2>
   <select id="aiType">
     <option value="story">Story</option>
     <option value="letter">Letter</option>
     <option value="speech">Speech</option>
     <option value="article">Article</option>
   </select>
-
-  <input id="aiTopic" placeholder="Enter topic..." style="width:100%; padding:10px; margin:8px 0;">
-  <button onclick="generateAI()">Generate</button>
-
-  <div id="aiResult" style="margin-top:10px;"></div>
+  <input id="aiTopic" placeholder="Enter topic for AI writing" />
+  <button onclick="runAI()">Generate</button>
+  <div id="aiResult"></div>
 </div>
 
-  <div id="results"></div>
+<div id="results"></div>
 
-  <button id="mic">🎤</button>
+<button id="micBtn">🎤</button>
 
-  <script>
-    const input = document.getElementById("q");
-    const results = document.getElementById("results");
-    const micBtn = document.getElementById("mic");
+<script>
+  const searchBox = document.getElementById("searchBox");
+  const results = document.getElementById("results");
+  const micBtn = document.getElementById("micBtn");
 
-    async function searchWikipedia(text) {
-      results.innerHTML = "Searching...";
-      const query = encodeURIComponent(text);
+  async function searchWiki(query) {
+    results.innerHTML = "Searching…";
+    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
 
-      try {
-        const res = await fetch(
-          "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" +
-          query +
-          "&format=json&origin=*"
-        );
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      results.innerHTML = "";
 
-        const data = await res.json();
-        results.innerHTML = "";
-
-        if (!data.query.search.length) {
-          results.innerHTML = "No results found.";
-          return;
-        }
-
-        data.query.search.forEach(item => {
-          const div = document.createElement("div");
-          div.className = "item";
-          div.innerHTML = `
-            <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}" target="_blank">
-              ${item.title}
-            </a>
-            <p>${item.snippet}...</p>
-          `;
-          results.appendChild(div);
-        });
-      } catch {
-        results.innerHTML = "Search failed.";
+      if (!data.query.search.length) {
+        results.innerHTML = "No results found.";
+        return;
       }
+
+      data.query.search.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "result";
+        div.innerHTML = `<a target="_blank" href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}">${item.title}</a><p>${item.snippet}…</p>`;
+        results.appendChild(div);
+      });
+    } catch {
+      results.innerHTML = "Search failed.";
+    }
+  }
+
+  searchBox.addEventListener("keydown", e => {
+    if (e.key === "Enter" && searchBox.value.trim()) {
+      searchWiki(searchBox.value.trim());
+    }
+  });
+
+  function runAI() {
+    const type = document.getElementById("aiType").value;
+    const topic = document.getElementById("aiTopic").value.trim();
+    const out = document.getElementById("aiResult");
+
+    if (!topic) {
+      out.innerText = "Please enter a topic.";
+      return;
     }
 
-    // Keyboard search
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && input.value.trim()) {
-        searchWikipedia(input.value.trim());
-      }
-    });
+    if (type === "story") {
+      out.innerText = `Once upon a time, there was a story about ${topic}. What began as an ordinary situation slowly turned into a journey of discovery, challenges, and growth. Through persistence and learning, the experience surrounding ${topic} transformed everything, leaving behind a powerful lesson.`;
+    }
 
-    // Voice input
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (type === "letter") {
+      out.innerText = `Dear Sir/Madam,\n\nI am writing this letter regarding ${topic}. I hope this message brings attention to the matter and leads to positive action.\n\nYours sincerely,\nEleco AI`;
+    }
 
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-US"; // change to hi-IN for Hindi
-      recognition.continuous = false;
+    if (type === "speech") {
+      out.innerText = `Respected guests,\n\nToday I would like to speak about ${topic}. It reminds us of our responsibilities and the importance of thoughtful action. Let us move forward with awareness and determination.\n\nThank you.`;
+    }
 
-      micBtn.onclick = () => {
-        recognition.start();
-      };
-
-      recognition.onresult = (event) => {
-        const text = event.results[0][0].transcript;
-        input.value = text;
-        searchWikipedia(text);
-      };
-    } else {
-      micBtn.innerText = "❌";
-    
-
-  output.innerText = text;
-}
-function generateAI() {
-  const type = document.getElementById("aiType").value;
-  const topic = document.getElementById("aiTopic").value.trim();
-  const output = document.getElementById("aiResult");
-
-  if (!topic) {
-    output.innerHTML = "Please enter a topic.";
-    return;
+    if (type === "article") {
+      out.innerText = `${topic} is an important subject in today’s world. This article explores its background, relevance, and impact on society. Understanding ${topic} helps individuals make informed decisions and prepares us for the future.`;
+    }
   }
 
-  const openings = [
-    "In today’s fast-changing world,",
-    "Over the past few years,",
-    "It is impossible to ignore the importance of",
-    "From a young age, we are taught about",
-  ];
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recog = new SpeechRecognition();
+    recog.lang = "en-US";
 
-  const middles = [
-    "has influenced our lives in many ways.",
-    "continues to shape the future.",
-    "plays a vital role in modern society.",
-    "affects people across all age groups.",
-  ];
-
-  const endings = [
-    "This is something we must understand deeply.",
-    "The future depends on how we handle it.",
-    "It is a topic worth serious thought.",
-    "Its impact will only grow with time.",
-  ];
-
-  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-  let text = "";
-
-  if (type === "story") {
-    text = `
-Once upon a time, ${topic} began as something small and unnoticed.
-${pick(openings)} ${topic}, it slowly became clear that this was no ordinary situation.
-
-As challenges appeared, courage and determination were tested.
-Mistakes were made, lessons were learned, and growth followed.
-
-In the end, ${topic} proved that even the simplest beginnings can lead to powerful transformations.
-`;
+    micBtn.onclick = () => recog.start();
+    recog.onresult = e => {
+      const text = e.results[0][0].transcript;
+      searchBox.value = text;
+      searchWiki(text);
+    };
   }
-
-  if (type === "letter") {
-    text = `
-Dear Sir/Madam,
-
-I hope this letter finds you well.
-I am writing to formally bring attention to ${topic}.
-
-${pick(openings)} ${topic}, ${pick(middles)}
-I kindly request your consideration and appropriate action regarding this matter.
-
-Thank you for your time and understanding.
-
-Yours sincerely,
-Eleco AI
-`;
-  }
-
-  if (type === "speech") {
-    text = `
-Respected guests, ladies and gentlemen,
-
-Good morning to everyone present here.
-Today, I stand before you to speak about ${topic}.
-
-${pick(openings)} ${topic}, ${pick(middles)}
-It teaches us responsibility, awareness, and the importance of taking action.
-
-Let us work together to ensure a better future.
-Thank you.
-`;
-  }
-
-  if (type === "article") {
-    text = `
-${topic}: An Overview
-
-${pick(openings)} ${topic}, ${pick(middles)}
-This article explores its background, significance, and real-world impact.
-
-Furthermore, understanding ${topic} helps individuals make informed decisions.
-${pick(endings)}
-
-In conclusion, ${topic} is not just a concept, but a powerful force shaping our present and future.
-`;
-  }
-
-  output.innerText = text.trim();
-}
-
-  </script>
+</script>
 
 </body>
 </html>
+
+
+     
+
+ 
+      
+
+ 
+  }
+
+
+
+ 
 
     
 
