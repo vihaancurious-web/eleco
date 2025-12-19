@@ -164,7 +164,11 @@
       };
     } else {
       micBtn.innerText = "❌";
-    }function generateAI() {
+    
+
+  output.innerText = text;
+}
+function generateAI() {
   const type = document.getElementById("aiType").value;
   const topic = document.getElementById("aiTopic").value.trim();
   const output = document.getElementById("aiResult");
@@ -174,25 +178,90 @@
     return;
   }
 
+  const openings = [
+    "In today’s fast-changing world,",
+    "Over the past few years,",
+    "It is impossible to ignore the importance of",
+    "From a young age, we are taught about",
+  ];
+
+  const middles = [
+    "has influenced our lives in many ways.",
+    "continues to shape the future.",
+    "plays a vital role in modern society.",
+    "affects people across all age groups.",
+  ];
+
+  const endings = [
+    "This is something we must understand deeply.",
+    "The future depends on how we handle it.",
+    "It is a topic worth serious thought.",
+    "Its impact will only grow with time.",
+  ];
+
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
   let text = "";
 
   if (type === "story") {
-    text = `Once upon a time, ${topic} changed everything. What started as a small idea soon became an unforgettable journey filled with challenges, hope, and success. In the end, ${topic} proved that determination can change the world.`;
+    text = `
+Once upon a time, ${topic} began as something small and unnoticed.
+${pick(openings)} ${topic}, it slowly became clear that this was no ordinary situation.
+
+As challenges appeared, courage and determination were tested.
+Mistakes were made, lessons were learned, and growth followed.
+
+In the end, ${topic} proved that even the simplest beginnings can lead to powerful transformations.
+`;
   }
 
   if (type === "letter") {
-    text = `Dear Sir/Madam,\n\nI am writing this letter regarding ${topic}. I sincerely hope this message finds you well and that this matter will be considered carefully.\n\nYours sincerely,\nEleco AI`;
+    text = `
+Dear Sir/Madam,
+
+I hope this letter finds you well.
+I am writing to formally bring attention to ${topic}.
+
+${pick(openings)} ${topic}, ${pick(middles)}
+I kindly request your consideration and appropriate action regarding this matter.
+
+Thank you for your time and understanding.
+
+Yours sincerely,
+Eleco AI
+`;
   }
 
   if (type === "speech") {
-    text = `Respected guests,\n\nToday I would like to speak about ${topic}. It teaches us important lessons about responsibility, growth, and the future. Let us work together to make a positive change.\n\nThank you.`;
+    text = `
+Respected guests, ladies and gentlemen,
+
+Good morning to everyone present here.
+Today, I stand before you to speak about ${topic}.
+
+${pick(openings)} ${topic}, ${pick(middles)}
+It teaches us responsibility, awareness, and the importance of taking action.
+
+Let us work together to ensure a better future.
+Thank you.
+`;
   }
 
   if (type === "article") {
-    text = `${topic} is an important subject in today’s world. This article explores its meaning, impact, and future possibilities, helping readers understand why ${topic} truly matters.`;
+    text = `
+${topic}: An Overview
+
+${pick(openings)} ${topic}, ${pick(middles)}
+This article explores its background, significance, and real-world impact.
+
+Furthermore, understanding ${topic} helps individuals make informed decisions.
+${pick(endings)}
+
+In conclusion, ${topic} is not just a concept, but a powerful force shaping our present and future.
+`;
   }
 
-  output.innerText = text;
+  output.innerText = text.trim();
 }
 
   </script>
