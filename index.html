@@ -1,278 +1,205 @@
-<!DOCTYPE html>
+
+  
+     
+  <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Eleco</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #ffffff;
-      color: #000000;
-      text-align: center;
-    }
+<meta charset="UTF-8">
+<title>Eleco</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    body.dark {
-      background-color: #121212;
-      color: #eaeaea;
-    }
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#ffffff;
+  color:#000;
+  text-align:center;
+}
+body.dark{
+  background:#121212;
+  color:#eaeaea;
+}
 
-    .header {
-      margin-top: 80px;
-    }
+#modeBtn{
+  position:fixed;
+  top:15px;
+  right:15px;
+  padding:8px 12px;
+  border-radius:20px;
+  cursor:pointer;
+  border:1px solid #ccc;
+}
 
-    .header img {
-      width: 60px;
-      vertical-align: middle;
-    }
+.header{margin-top:90px;}
+.logo{font-size:48px;}
 
-    .header h1 {
-      display: inline-block;
-      font-size: 48px;
-      font-weight: normal;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
+h1{font-size:48px;font-weight:normal;margin:10px 0;}
+.e{color:#4285f4}.l{color:#ea4335}.e2{color:#fbbc05}.c{color:#4285f4}.o{color:#34a853}
 
-    .e { color: #4285f4; }
-    .l { color: #ea4335; }
-    .e2 { color: #fbbc05; }
-    .c { color: #4285f4; }
-    .o { color: #34a853; }
+.search-box{margin-top:40px;}
+input{
+  width:65%;max-width:600px;
+  padding:14px 50px 14px 20px;
+  font-size:18px;
+  border-radius:30px;
+  border:1px solid #dcdcdc;
+}
+body.dark input{background:#1e1e1e;color:#fff;border:1px solid #555;}
 
-    .search-box {
-      margin-top: 40px;
-    }
+.mic{
+  margin-left:-45px;
+  background:none;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
+}
 
-    input {
-      width: 60%;
-      max-width: 600px;
-      padding: 14px 50px 14px 20px;
-      font-size: 18px;
-      border-radius: 30px;
-      border: 1px solid #dcdcdc;
-      outline: none;
-      background-color: #ffffff;
-      color: #000000;
-    }
+.tabs{margin-top:25px;}
+.tabs button{
+  margin:6px;padding:8px 16px;
+  border-radius:4px;
+  border:1px solid #dadce0;
+  background:#f8f9fa;
+  cursor:pointer;
+}
+body.dark .tabs button{background:#2a2a2a;color:#fff;border:1px solid #555;}
 
-    body.dark input {
-      background-color: #1e1e1e;
-      color: #ffffff;
-      border: 1px solid #555;
-    }
+#calcBtn{
+  position:fixed;
+  bottom:20px;right:20px;
+  font-size:22px;padding:12px;
+  border-radius:50%;cursor:pointer;
+}
 
-    .mic {
-      margin-left: -45px;
-      border: none;
-      background: none;
-      font-size: 20px;
-      cursor: pointer;
-    }
+#calculator{
+  display:none;
+  position:fixed;
+  bottom:90px;right:20px;
+  width:220px;
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:10px;padding:10px;
+}
+body.dark #calculator{background:#1e1e1e;border:1px solid #555;}
 
-    .tabs {
-      margin-top: 25px;
-    }
+#calculator input{
+  width:100%;height:40px;
+  font-size:18px;margin-bottom:8px;
+  text-align:right;
+}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.calc-grid button{padding:10px;font-size:16px;cursor:pointer;}
+</style>
 
-    .tabs button {
-      margin: 5px;
-      padding: 8px 16px;
-      border: 1px solid #dadce0;
-      background: #f8f9fa;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    body.dark .tabs button {
-      background: #2a2a2a;
-      color: #ffffff;
-      border: 1px solid #555;
-    }
-
-    .tabs button:hover {
-      background: #e8eaed;
-    }
-
-    body.dark .tabs button:hover {
-      background: #3a3a3a;
-    }
-
-    #modeBtn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      padding: 8px 12px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-      background-color: #f0f0f0;
-    }
-
-    body.dark #modeBtn {
-      background-color: #3a3a3a;
-      color: #ffffff;
-      border: 1px solid #555;
-    }
-  </style>
 </head>
 <body>
 
-  <button id="modeBtn">🌙</button>
+<button id="modeBtn">🌙</button>
 
-  <div class="header">
-    <span style="font-size:48px;">🤖</span>
-    <h1>
-      <span class="e">E</span>
-      <span class="l">l</span>
-      <span class="e2">e</span>
-      <span class="c">c</span>
-      <span class="o">o</span>
-    </h1>
+<div class="header">
+  <div class="logo">🤖</div>
+  <h1><span class="e">E</span><span class="l">l</span><span class="e2">e</span><span class="c">c</span><span class="o">o</span></h1>
+</div>
+
+<div class="search-box">
+  <input id="query" placeholder="Search Eleco or speak">
+  <button class="mic" id="micBtn">🎤</button>
+</div>
+
+<div class="tabs">
+  <button id="webBtn">Web</button>
+  <button id="shopBtn">Shopping</button>
+  <button id="videoBtn">Videos</button>
+  <button id="newsBtn">News</button>
+</div>
+
+<button id="calcBtn">🧮</button>
+
+<div id="calculator">
+  <input id="calcDisplay" readonly>
+  <div class="calc-grid">
+    <button>7</button><button>8</button><button>9</button><button>/</button>
+    <button>4</button><button>5</button><button>6</button><button>*</button>
+    <button>1</button><button>2</button><button>3</button><button>-</button>
+    <button>0</button><button>.</button><button>=</button><button>+</button>
   </div>
+  <button id="clearCalc" style="width:100%;margin-top:6px;">Clear</button>
+</div>
 
-  <div class="search-box">
-    <input id="query" type="text" placeholder="Search Eleco or speak - Best shortcut to Google">
-    <button class="mic" onclick="voice()">🎤</button>
-  </div>
+<script>
+window.addEventListener("DOMContentLoaded",()=>{
+  const q=document.getElementById("query");
+  const modeBtn=document.getElementById("modeBtn");
+  const micBtn=document.getElementById("micBtn");
 
-  <div class="tabs">
-    <button onclick="web()">🔍 Web</button>
-    <button onclick="shopping()">🛒 Shopping</button>
-    <button onclick="videos()">🎥 Videos</button>
-    <button onclick="news()">📰 News</button>
-  </div>
+  function go(url){
+    if(q.value.trim()){
+      window.location.href=url+encodeURIComponent(q.value);
+    }
+  }
 
-  <script>
-  <script>
-window.onload = function () {
+  document.getElementById("webBtn").onclick=()=>go("https://www.google.com/search?q=");
+  document.getElementById("shopBtn").onclick=()=>go("https://www.google.com/search?tbm=shop&q=");
+  document.getElementById("videoBtn").onclick=()=>go("https://www.google.com/search?tbm=vid&q=");
+  document.getElementById("newsBtn").onclick=()=>go("https://www.google.com/search?tbm=nws&q=");
 
-  const q = document.getElementById("query");
-  const modeBtn = document.getElementById("modeBtn");
-
-  // ENTER KEY SEARCH
-  q.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") web();
+  q.addEventListener("keydown",e=>{
+    if(e.key==="Enter") go("https://www.google.com/search?q=");
   });
 
-  // SEARCH FUNCTIONS
-  window.go = function (u) {
-    if (q.value.trim() !== "") {
-      window.location.href = u + encodeURIComponent(q.value);
-    }
-  };
-
-  window.web = function () {
-    go("https://www.google.com/search?q=");
-  };
-  window.shop = function () {
-    go("https://www.google.com/search?tbm=shop&q=");
-  };
-  window.video = function () {
-    go("https://www.google.com/search?tbm=vid&q=");
-  };
-  window.news = function () {
-    go("https://www.google.com/search?tbm=nws&q=");
-  };
-
-  // 🎤 VOICE SEARCH (FIXED)
-  window.voice = function () {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Voice search not supported in this browser");
+  micBtn.onclick=()=>{
+    if(!('webkitSpeechRecognition'in window)){
+      alert("Voice search not supported");
       return;
     }
-    const r = new webkitSpeechRecognition();
-    r.lang = "en-IN";
+    const r=new webkitSpeechRecognition();
+    r.lang='en-IN';
     r.start();
-    r.onresult = function (e) {
-      q.value = e.results[0][0].transcript;
+    r.onresult=e=>{
+      q.value=e.results[0][0].transcript;
     };
   };
 
-  // 🌙 DARK / ☀️ LIGHT MODE (FIXED)
-  window.toggleMode = function () {
+  modeBtn.onclick=()=>{
     document.body.classList.toggle("dark");
-    const dark = document.body.classList.contains("dark");
-    modeBtn.textContent = dark ? "☀️" : "🌙";
-    localStorage.setItem("mode", dark ? "dark" : "light");
+    const dark=document.body.classList.contains("dark");
+    modeBtn.textContent=dark?"☀️":"🌙";
+    localStorage.setItem("mode",dark?"dark":"light");
   };
 
-  modeBtn.onclick = toggleMode;
-
-  if (localStorage.getItem("mode") === "dark") {
+  if(localStorage.getItem("mode")==="dark"){
     document.body.classList.add("dark");
-    modeBtn.textContent = "☀️";
+    modeBtn.textContent="☀️";
   }
 
-};
+  let open=false;
+  document.getElementById("calcBtn").onclick=()=>{
+    open=!open;
+    document.getElementById("calculator").style.display=open?"block":"none";
+  };
+
+  const disp=document.getElementById("calcDisplay");
+  document.querySelectorAll(".calc-grid button").forEach(b=>{
+    b.onclick=()=>{
+      if(b.textContent==='='){
+        try{disp.value=eval(disp.value);}catch{disp.value='Error';}
+      }else{
+        disp.value+=b.textContent;
+      }
+    };
+  });
+
+  document.getElementById("clearCalc").onclick=()=>disp.value='';
+});
 </script>
-  </script>
 
 </body>
 </html>
-<script>
-window.onload = function () {
 
-  const q = document.getElementById("query");
-  const modeBtn = document.getElementById("modeBtn");
+  
 
-  // ENTER KEY SEARCH
-  q.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") web();
-  });
+  
 
-  // SEARCH FUNCTIONS
-  window.go = function (u) {
-    if (q.value.trim() !== "") {
-      window.location.href = u + encodeURIComponent(q.value);
-    }
-  };
-
-  window.web = function () {
-    go("https://www.google.com/search?q=");
-  };
-  window.shop = function () {
-    go("https://www.google.com/search?tbm=shop&q=");
-  };
-  window.video = function () {
-    go("https://www.google.com/search?tbm=vid&q=");
-  };
-  window.news = function () {
-    go("https://www.google.com/search?tbm=nws&q=");
-  };
-
-  // 🎤 VOICE SEARCH (FIXED)
-  window.voice = function () {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Voice search not supported in this browser");
-      return;
-    }
-    const r = new webkitSpeechRecognition();
-    r.lang = "en-IN";
-    r.start();
-    r.onresult = function (e) {
-      q.value = e.results[0][0].transcript;
-    };
-  };
-
-  // 🌙 DARK / ☀️ LIGHT MODE (FIXED)
-  window.toggleMode = function () {
-    document.body.classList.toggle("dark");
-    const dark = document.body.classList.contains("dark");
-    modeBtn.textContent = dark ? "☀️" : "🌙";
-    localStorage.setItem("mode", dark ? "dark" : "light");
-  };
-
-  modeBtn.onclick = toggleMode;
-
-  if (localStorage.getItem("mode") === "dark") {
-    document.body.classList.add("dark");
-    modeBtn.textContent = "☀️";
-  }
-
-};
-</script>
-
-   
-         
-
+ 
