@@ -142,6 +142,28 @@
 
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eleco</title>
+</head>
+<body>
+
+<h1>Eleco</h1>
+
+<input id="q" placeholder="Type and press Enter">
+
+<script>
+  const q = document.getElementById("q");
+  q.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      alert("You searched: " + q.value);
+    }
+  });
+</script>
+
+</body>
+</html>
 
 
 
