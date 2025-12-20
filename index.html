@@ -2,26 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <button id="modeBtn" onclick="toggleMode()" style="
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-">
-  🌙
-</button>
   <title>Eleco</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #ffffff;
+      background-color: #ffffff;
+      color: #000000;
       text-align: center;
+    }
+
+    body.dark {
+      background-color: #121212;
+      color: #eaeaea;
     }
 
     .header {
@@ -59,6 +53,14 @@
       border-radius: 30px;
       border: 1px solid #dcdcdc;
       outline: none;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    body.dark input {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      border: 1px solid #555;
     }
 
     .mic {
@@ -82,33 +84,41 @@
       border-radius: 4px;
     }
 
+    body.dark .tabs button {
+      background: #2a2a2a;
+      color: #ffffff;
+      border: 1px solid #555;
+    }
+
     .tabs button:hover {
       background: #e8eaed;
-      body.dark {
-  background: #121212;
-  color: #eaeaea;
-}
+    }
 
-body.dark input {
-  background: #1e1e1e;
-  color: #ffffff;
-  border: 1px solid #555;
-}
+    body.dark .tabs button:hover {
+      background: #3a3a3a;
+    }
 
-body.dark .tabs button {
-  background: #2a2a2a;
-  color: #ffffff;
-  border: 1px solid #555;
-}
+    #modeBtn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      background-color: #f0f0f0;
+    }
 
-body.dark .tabs button:hover {
-  background: #3a3a3a;
-}
-
+    body.dark #modeBtn {
+      background-color: #3a3a3a;
+      color: #ffffff;
+      border: 1px solid #555;
     }
   </style>
 </head>
 <body>
+
+  <button id="modeBtn">🌙</button>
 
   <div class="header">
     <img src="robot.png" alt="Eleco Robot">
@@ -135,32 +145,25 @@ body.dark .tabs button:hover {
 
   <script>
     const q = document.getElementById("query");
+    const modeBtn = document.getElementById("modeBtn");
 
+    // Search Enter key
     q.addEventListener("keydown", e => {
       if (e.key === "Enter") web();
     });
 
-    function web() {
-      go("https://www.google.com/search?q=");
-    }
-
-   function shopping() {
-  go("https://www.google.com/search?tbm=shop&q=");
-}
-
-    function videos() {
-      go("https://www.google.com/search?tbm=vid&q=");
-    }
-
-    function news() {
-      go("https://www.google.com/search?tbm=nws&q=");
-    }
+    // Search functions
+    function web() { go("https://www.google.com/search?q="); }
+    function shopping() { go("https://www.google.com/search?tbm=shop&q="); }
+    function videos() { go("https://www.google.com/search?tbm=vid&q="); }
+    function news() { go("https://www.google.com/search?tbm=nws&q="); }
 
     function go(base) {
       if (!q.value) return;
       window.location.href = base + encodeURIComponent(q.value);
     }
 
+    // Voice search
     function voice() {
       if (!("webkitSpeechRecognition" in window)) return;
       const r = new webkitSpeechRecognition();
@@ -168,35 +171,34 @@ body.dark .tabs button:hover {
       r.start();
       r.onresult = e => {
         q.value = e.results[0][0].transcript;
-        function toggleMode() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("mode",
-    document.body.classList.contains("dark") ? "dark" : "light"
-  );
-
-  document.getElementById("modeBtn").textContent =
-    document.body.classList.contains("dark") ? "☀️" : "🌙";
-}
-
-if (localStorage.getItem("mode") === "dark") {
-  document.body.classList.add("dark");
-  document.getElementById("modeBtn").textContent = "☀️";
-}
-  }
-}
-
       };
+    }
+
+    // Dark/Light mode toggle
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      if(document.body.classList.contains("dark")){
+        modeBtn.textContent = "☀️";
+        localStorage.setItem("mode","dark");
+      } else {
+        modeBtn.textContent = "🌙";
+        localStorage.setItem("mode","light");
+      }
+    }
+
+    modeBtn.addEventListener("click", toggleMode);
+
+    // Remember mode
+    if(localStorage.getItem("mode")==="dark"){
+      document.body.classList.add("dark");
+      modeBtn.textContent = "☀️";
     }
   </script>
 
 </body>
 </html>
 
-   
-
-  
-
-
+ 
 
    
 
