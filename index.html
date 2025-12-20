@@ -94,7 +94,58 @@
     <button class="mic" onclick="voice()">🎤</button>
   </div>
 
- 
+  <div class="tabs">
+    <button onclick="web()">🔍 Web</button>
+    <button onclick="images()">🖼 Images</button>
+    <button onclick="videos()">🎥 Videos</button>
+    <button onclick="news()">📰 News</button>
+  </div>
+
+  <script>
+    const q = document.getElementById("query");
+
+    q.addEventListener("keydown", e => {
+      if (e.key === "Enter") web();
+    });
+
+    function web() {
+      go("https://www.google.com/search?q=");
+    }
+
+    function images() {
+      go("https://www.google.com/search?tbm=isch&q=");
+    }
+
+    function videos() {
+      go("https://www.google.com/search?tbm=vid&q=");
+    }
+
+    function news() {
+      go("https://www.google.com/search?tbm=nws&q=");
+    }
+
+    function go(base) {
+      if (!q.value) return;
+      window.location.href = base + encodeURIComponent(q.value);
+    }
+
+    function voice() {
+      if (!("webkitSpeechRecognition" in window)) return;
+      const r = new webkitSpeechRecognition();
+      r.lang = "en-IN";
+      r.start();
+      r.onresult = e => {
+        q.value = e.results[0][0].transcript;
+      };
+    }
+  </script>
+
+</body>
+</html>
+
+   
+
+  
 
 
 
