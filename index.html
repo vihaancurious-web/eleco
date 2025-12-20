@@ -1,266 +1,151 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Eleco</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f8f9fa;
-      color: #202124;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      text-align: center;
     }
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-bottom: 1px solid #dadce0;
-      background: white;
+    .header {
+      margin-top: 80px;
     }
 
-    header img {
-      width: 36px;
-      height: 36px;
+    .header img {
+      width: 60px;
+      vertical-align: middle;
     }
 
-    header h1 {
-      font-size: 22px;
-      margin: 0;
+    .header h1 {
+      display: inline-block;
+      font-size: 48px;
+      font-weight: normal;
+      margin-left: 10px;
+      vertical-align: middle;
     }
 
-    #searchBox {
-      width: 100%;
-      padding: 12px 18px;
-      font-size: 16px;
-      border-radius: 999px;
-      border: 1px solid #dadce0;
+    .e { color: #4285f4; }
+    .l { color: #ea4335; }
+    .e2 { color: #fbbc05; }
+    .c { color: #4285f4; }
+    .o { color: #34a853; }
+
+    .search-box {
+      margin-top: 40px;
+    }
+
+    input {
+      width: 60%;
+      max-width: 600px;
+      padding: 14px 50px 14px 20px;
+      font-size: 18px;
+      border-radius: 30px;
+      border: 1px solid #dcdcdc;
       outline: none;
-      margin: 16px;
     }
 
-    #aiBox {
-      background: white;
-      padding: 16px;
-      border-bottom: 1px solid #dadce0;
-    }
-
-    #aiBox h2 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    #aiBox select,
-    #aiBox input,
-    #aiBox button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 14px;
-    }
-
-    #aiResult {
-      margin-top: 12px;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-
-    #results {
-      padding: 16px;
-    }
-
-    .result {
-      margin-bottom: 16px;
-    }
-
-    .result a {
-      font-size: 18px;
-      color: #1a0dab;
-      text-decoration: none;
-    }
-
-    .result p {
-      margin: 4px 0 0;
-      color: #4d5156;
-    }
-
-    #micBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-size: 22px;
-      padding: 14px;
-      border-radius: 50%;
+    .mic {
+      margin-left: -45px;
+      border: none;
+      background: none;
+      font-size: 20px;
       cursor: pointer;
+    }
+
+    .tabs {
+      margin-top: 25px;
+    }
+
+    .tabs button {
+      margin: 5px;
+      padding: 8px 16px;
+      border: 1px solid #dadce0;
+      background: #f8f9fa;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .tabs button:hover {
+      background: #e8eaed;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco" />
-  <h1>Eleco</h1>
-</header>
+  <div class="header">
+    <img src="robot.png" alt="Eleco Robot">
+    <h1>
+      <span class="e">E</span>
+      <span class="l">l</span>
+      <span class="e2">e</span>
+      <span class="c">c</span>
+      <span class="o">o</span>
+    </h1>
+  </div>
 
-<input id="searchBox" placeholder="Search Eleco or ask something…" />
+  <div class="search-box">
+    <input id="query" type="text" placeholder="Search Eleco or speak">
+    <button class="mic" onclick="voice()">🎤</button>
+  </div>
 
-<div id="results"></div>
+  <div class="tabs">
+    <button onclick="web()">🔍 Web</button>
+    <button onclick="images()">🖼 Images</button>
+    <button onclick="videos()">🎥 Videos</button>
+    <button onclick="news()">📰 News</button>
+  </div>
 
-<button id="micBtn">🎤</button>
+  <script>
+    const q = document.getElementById("query");
 
-<script>
-  const searchBox = document.getElementById("searchBox");
-  const results = document.getElementById("results");
-  const micBtn = document.getElementById("micBtn");
+    q.addEventListener("keydown", e => {
+      if (e.key === "Enter") web();
+    });
 
-  async function searchWiki(query) {
-    results.innerHTML = "Searching…";
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
-
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      results.innerHTML = "";
-
-      if (!data.query.search.length) {
-        results.innerHTML = "No results found.";
-        return;
-      }
-
-      data.query.search.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "result";
-        div.innerHTML = `<a target="_blank" href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}">${item.title}</a><p>${item.snippet}…</p>`;
-        results.appendChild(div);
-      });
-    } catch {
-      results.innerHTML = "Search failed.";
-    }
-  }
-
-  searchBox.addEventListener("keydown", e => {
-    if (e.key === "Enter" && searchBox.value.trim()) {
-      searchWiki(searchBox.value.trim());
-    }
-  });
-
-  function runAI() {
-    const type = document.getElementById("aiType").value;
-    const topic = document.getElementById("aiTopic").value.trim();
-    const out = document.getElementById("aiResult");
-
-    if (!topic) {
-      out.innerText = "Please enter a topic.";
-      return;
+    function web() {
+      go("https://www.google.com/search?q=");
     }
 
-    if (type === "story") {
-      out.innerText = `Once upon a time, there was a story about ${topic}. What began as an ordinary situation slowly turned into a journey of discovery, challenges, and growth. Through persistence and learning, the experience surrounding ${topic} transformed everything, leaving behind a powerful lesson.`;
+    function images() {
+      go("https://www.google.com/search?tbm=isch&q=");
     }
 
-    if (type === "letter") {
-      out.innerText = `Dear Sir/Madam,\n\nI am writing this letter regarding ${topic}. I hope this message brings attention to the matter and leads to positive action.\n\nYours sincerely,\nEleco AI`;
+    function videos() {
+      go("https://www.google.com/search?tbm=vid&q=");
     }
 
-    if (type === "speech") {
-      out.innerText = `Respected guests,\n\nToday I would like to speak about ${topic}. It reminds us of our responsibilities and the importance of thoughtful action. Let us move forward with awareness and determination.\n\nThank you.`;
+    function news() {
+      go("https://www.google.com/search?tbm=nws&q=");
     }
 
-    if (type === "article") {
-      out.innerText = `${topic} is an important subject in today’s world. This article explores its background, relevance, and impact on society. Understanding ${topic} helps individuals make informed decisions and prepares us for the future.`;
+    function go(base) {
+      if (!q.value) return;
+      window.location.href = base + encodeURIComponent(q.value);
     }
-  }
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recog = new SpeechRecognition();
-    recog.lang = "en-US";
-
-    micBtn.onclick = () => recog.start();
-    recog.onresult = e => {
-      const text = e.results[0][0].transcript;
-      searchBox.value = text;
-      searchWiki(text);
-      <script>
-  const input = document.getElementById("search");
-
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") webSearch();
-  });
-
-  function webSearch() {
-    go("https://www.google.com/search?q=");
-  }
-
-  function imageSearch() {
-    go("https://www.google.com/search?tbm=isch&q=");
-  }
-
-  function videoSearch() {
-    go("https://www.google.com/search?tbm=vid&q=");
-  }
-
-  function newsSearch() {
-    go("https://www.google.com/search?tbm=nws&q=");
-  }
-
-  function go(base) {
-    if (!input.value) return;
-    window.location.href = base + encodeURIComponent(input.value);
-  }
-
-  function voice() {
-    if (!("webkitSpeechRecognition" in window)) return;
-    const r = new webkitSpeechRecognition();
-    r.lang = "en-IN";
-    r.start();
-    r.onresult = e => {
-      input.value = e.results[0][0].transcript;
-    };
-  }
-</script>
-
-    };
-  }
-</script>
+    function voice() {
+      if (!("webkitSpeechRecognition" in window)) return;
+      const r = new webkitSpeechRecognition();
+      r.lang = "en-IN";
+      r.start();
+      r.onresult = e => {
+        q.value = e.results[0][0].transcript;
+      };
+    }
+  </script>
 
 </body>
 </html>
-<div style="margin-top:25px;">
-  <button onclick="webSearch()">🔍 Web</button>
-  <button onclick="imageSearch()">🖼 Images</button>
-  <button onclick="videoSearch()">🎥 Videos</button>
-  <button onclick="newsSearch()">📰 News</button>
-</div>
-
-
-     
-
- 
-      
-
- 
-  
 
 
 
- 
-
-    
-
-
-     
-
-     
-
-
-    
-
+   
 
   
  
