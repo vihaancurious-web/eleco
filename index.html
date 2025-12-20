@@ -1,29 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eleco Search</title>
+  <meta charset="UTF-8">
+  <title>Eleco</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial, sans-serif;
       background: #ffffff;
       text-align: center;
     }
 
-    header {
+    .top {
       margin-top: 80px;
     }
 
-    header img {
+    .top img {
       width: 60px;
       vertical-align: middle;
     }
 
-    header h1 {
+    .top h1 {
       display: inline-block;
       font-size: 48px;
       font-weight: normal;
@@ -31,17 +30,17 @@
       vertical-align: middle;
     }
 
-    header h1 span.e { color: #4285f4; }
-    header h1 span.l { color: #ea4335; }
-    header h1 span.e2 { color: #fbbc05; }
-    header h1 span.c { color: #4285f4; }
-    header h1 span.o { color: #34a853; }
+    .e { color: #4285f4; }
+    .l { color: #ea4335; }
+    .e2 { color: #fbbc05; }
+    .c { color: #4285f4; }
+    .o { color: #34a853; }
 
-    .search-box {
+    .box {
       margin-top: 40px;
     }
 
-    input[type="text"] {
+    input {
       width: 60%;
       max-width: 600px;
       padding: 14px 50px 14px 20px;
@@ -51,42 +50,19 @@
       outline: none;
     }
 
-    .mic-btn {
+    button {
       margin-left: -45px;
       border: none;
       background: none;
-      cursor: pointer;
       font-size: 20px;
-    }
-
-    .results {
-      margin: 40px auto;
-      width: 80%;
-      max-width: 800px;
-      text-align: left;
-    }
-
-    .result-item {
-      margin-bottom: 25px;
-    }
-
-    .result-item a {
-      font-size: 18px;
-      color: #1a0dab;
-      text-decoration: none;
-    }
-
-    .result-item p {
-      color: #4d5156;
-      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <img src="robot.png" alt="Eleco Robot" />
+  <div class="top">
+    <img src="robot.png" alt="Eleco Robot">
     <h1>
       <span class="e">E</span>
       <span class="l">l</span>
@@ -94,61 +70,36 @@
       <span class="c">c</span>
       <span class="o">o</span>
     </h1>
-  </header>
-
-  <!-- SEARCH -->
-  <div class="search-box">
-    <input id="searchInput" type="text" placeholder="Search Eleco or speak..." />
-    <button class="mic-btn" onclick="startVoice()">🎤</button>
   </div>
 
-  <!-- RESULTS -->
-  <div id="results" class="results"></div>
+  <div class="box">
+    <input id="search" type="text" placeholder="Search Eleco or speak">
+    <button onclick="voice()">🎤</button>
+  </div>
 
   <script>
-    const input = document.getElementById("searchInput");
-    const resultsDiv = document.getElementById("results");
+    const input = document.getElementById("search");
 
-    input.addEventListener("keydown", function (e) {
+    input.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
-        search(input.value);
+        go(input.value);
       }
     });
 
-    function search(query) {
-      if (!query) return;
-
-      resultsDiv.innerHTML = "<p>Searching...</p>";
-
-      fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(
-        'https://duckduckgo.com/html/?q=' + query
-      )}`)
-        .then(res => res.text())
-        .then(html => {
-          resultsDiv.innerHTML = "<p>Results opened in new tab.</p>";
-          window.open('https://duckduckgo.com/?q=' + encodeURIComponent(query), '_blank');
-        })
-        .catch(() => {
-          resultsDiv.innerHTML = "<p>Search failed.</p>";
-        });
+    function go(q) {
+      if (!q) return;
+      window.location.href =
+        "https://duckduckgo.com/?q=" + encodeURIComponent(q);
     }
 
-    function startVoice() {
-      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-        alert('Voice search not supported');
-        return;
-      }
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-
-      recognition.lang = 'en-IN'; // supports Hindi + English
-      recognition.start();
-
-      recognition.onresult = function (event) {
-        const text = event.results[0][0].transcript;
-        input.value = text;
-        search(text);
+    function voice() {
+      if (!("webkitSpeechRecognition" in window)) return;
+      const r = new webkitSpeechRecognition();
+      r.lang = "en-IN";
+      r.start();
+      r.onresult = e => {
+        input.value = e.results[0][0].transcript;
+        go(input.value);
       };
     }
   </script>
@@ -157,47 +108,8 @@
 </html>
 
 
-
-
-     
-     
-  
    
-  
- 
-
-  
-
- 
-      
-
- 
- 
-
-
- 
-
-    
-
-
-     
-
-     
-
-
-    
-
-
-  
- 
-
-    
-    
-
-
    
-
-  
          
 
 
