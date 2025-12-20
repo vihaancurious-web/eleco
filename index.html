@@ -210,6 +210,68 @@ window.onload = function () {
 
 </body>
 </html>
+<script>
+window.onload = function () {
+
+  const q = document.getElementById("query");
+  const modeBtn = document.getElementById("modeBtn");
+
+  // ENTER KEY SEARCH
+  q.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") web();
+  });
+
+  // SEARCH FUNCTIONS
+  window.go = function (u) {
+    if (q.value.trim() !== "") {
+      window.location.href = u + encodeURIComponent(q.value);
+    }
+  };
+
+  window.web = function () {
+    go("https://www.google.com/search?q=");
+  };
+  window.shop = function () {
+    go("https://www.google.com/search?tbm=shop&q=");
+  };
+  window.video = function () {
+    go("https://www.google.com/search?tbm=vid&q=");
+  };
+  window.news = function () {
+    go("https://www.google.com/search?tbm=nws&q=");
+  };
+
+  // 🎤 VOICE SEARCH (FIXED)
+  window.voice = function () {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Voice search not supported in this browser");
+      return;
+    }
+    const r = new webkitSpeechRecognition();
+    r.lang = "en-IN";
+    r.start();
+    r.onresult = function (e) {
+      q.value = e.results[0][0].transcript;
+    };
+  };
+
+  // 🌙 DARK / ☀️ LIGHT MODE (FIXED)
+  window.toggleMode = function () {
+    document.body.classList.toggle("dark");
+    const dark = document.body.classList.contains("dark");
+    modeBtn.textContent = dark ? "☀️" : "🌙";
+    localStorage.setItem("mode", dark ? "dark" : "light");
+  };
+
+  modeBtn.onclick = toggleMode;
+
+  if (localStorage.getItem("mode") === "dark") {
+    document.body.classList.add("dark");
+    modeBtn.textContent = "☀️";
+  }
+
+};
+</script>
 
    
          
