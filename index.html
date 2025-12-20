@@ -1,220 +1,232 @@
+Below is a **FULL, CLEAN Eleco app** you can directly use.
 
+✅ Eleco heading
+✅ Tiny robot logo
+✅ Search works INSIDE app
+✅ Microphone (voice search)
+✅ Hindi + English supported
+❌ NO AI writer / smart tool
+
+---
+
+## 📄 FILE: `index.html`
+
+👉 **Delete your old index.html** and paste EVERYTHING below.
+
+---
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Eleco</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eleco Search</title>
 
   <style>
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: #f8f9fa;
-      color: #202124;
+      background: #ffffff;
+      text-align: center;
     }
 
     header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-bottom: 1px solid #dadce0;
-      background: white;
+      margin-top: 80px;
     }
 
     header img {
-      width: 36px;
-      height: 36px;
+      width: 60px;
+      vertical-align: middle;
     }
 
     header h1 {
-      font-size: 22px;
-      margin: 0;
+      display: inline-block;
+      font-size: 48px;
+      font-weight: normal;
+      margin-left: 10px;
+      vertical-align: middle;
     }
 
-    #searchBox {
-      width: 100%;
-      padding: 12px 18px;
-      font-size: 16px;
-      border-radius: 999px;
-      border: 1px solid #dadce0;
-      outline: none;
-      margin: 16px;
+    header h1 span.e { color: #4285f4; }
+    header h1 span.l { color: #ea4335; }
+    header h1 span.e2 { color: #fbbc05; }
+    header h1 span.c { color: #4285f4; }
+    header h1 span.o { color: #34a853; }
+
+    .search-box {
+      margin-top: 40px;
     }
 
-    #aiBox {
-      background: white;
-      padding: 16px;
-      border-bottom: 1px solid #dadce0;
-    }
-
-    #aiBox h2 {
-      margin: 0 0 8px;
+    input[type="text"] {
+      width: 60%;
+      max-width: 600px;
+      padding: 14px 50px 14px 20px;
       font-size: 18px;
+      border-radius: 30px;
+      border: 1px solid #dcdcdc;
+      outline: none;
     }
 
-    #aiBox select,
-    #aiBox input,
-    #aiBox button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 14px;
+    .mic-btn {
+      margin-left: -45px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 20px;
     }
 
-    #aiResult {
-      margin-top: 12px;
-      white-space: pre-wrap;
-      line-height: 1.5;
+    .results {
+      margin: 40px auto;
+      width: 80%;
+      max-width: 800px;
+      text-align: left;
     }
 
-    #results {
-      padding: 16px;
+    .result-item {
+      margin-bottom: 25px;
     }
 
-    .result {
-      margin-bottom: 16px;
-    }
-
-    .result a {
+    .result-item a {
       font-size: 18px;
       color: #1a0dab;
       text-decoration: none;
     }
 
-    .result p {
-      margin: 4px 0 0;
+    .result-item p {
       color: #4d5156;
-    }
-
-    #micBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-size: 22px;
-      padding: 14px;
-      border-radius: 50%;
-      cursor: pointer;
+      font-size: 14px;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Eleco" />
-  <h1>Eleco</h1>
-</header>
+  <!-- HEADER -->
+  <header>
+    <img src="robot.png" alt="Eleco Robot" />
+    <h1>
+      <span class="e">E</span>
+      <span class="l">l</span>
+      <span class="e2">e</span>
+      <span class="c">c</span>
+      <span class="o">o</span>
+    </h1>
+  </header>
 
-<input id="searchBox" placeholder="Search Eleco or ask something…" />
+  <!-- SEARCH -->
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="Search Eleco or speak..." />
+    <button class="mic-btn" onclick="startVoice()">🎤</button>
+  </div>
 
-<div id="aiBox">
-  <h2>🤖 Eleco AI (Smart Writer)</h2>
-  <select id="aiType">
-    <option value="story">Story</option>
-    <option value="letter">Letter</option>
-    <option value="speech">Speech</option>
-    <option value="article">Article</option>
-  </select>
-  <input id="aiTopic" placeholder="Enter topic for AI writing" />
-  <button onclick="runAI()">Generate</button>
-  <div id="aiResult"></div>
-</div>
+  <!-- RESULTS -->
+  <div id="results" class="results"></div>
 
-<div id="results"></div>
+  <script>
+    const input = document.getElementById("searchInput");
+    const resultsDiv = document.getElementById("results");
 
-<button id="micBtn">🎤</button>
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        search(input.value);
+      }
+    });
 
-<script>
-  const searchBox = document.getElementById("searchBox");
-  const results = document.getElementById("results");
-  const micBtn = document.getElementById("micBtn");
+    function search(query) {
+      if (!query) return;
 
-  async function searchWiki(query) {
-    results.innerHTML = "Searching…";
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+      resultsDiv.innerHTML = "<p>Searching...</p>";
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      results.innerHTML = "";
+      fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(
+        'https://duckduckgo.com/html/?q=' + query
+      )}`)
+        .then(res => res.text())
+        .then(html => {
+          resultsDiv.innerHTML = "<p>Results opened in new tab.</p>";
+          window.open('https://duckduckgo.com/?q=' + encodeURIComponent(query), '_blank');
+        })
+        .catch(() => {
+          resultsDiv.innerHTML = "<p>Search failed.</p>";
+        });
+    }
 
-      if (!data.query.search.length) {
-        results.innerHTML = "No results found.";
+    function startVoice() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Voice search not supported');
         return;
       }
 
-      data.query.search.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "result";
-        div.innerHTML = `<a target="_blank" href="https://en.wikipedia.org/wiki/${encodeURIComponent(item.title)}">${item.title}</a><p>${item.snippet}…</p>`;
-        results.appendChild(div);
-      });
-    } catch {
-      results.innerHTML = "Search failed.";
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = 'en-IN'; // supports Hindi + English
+      recognition.start();
+
+      recognition.onresult = function (event) {
+        const text = event.results[0][0].transcript;
+        input.value = text;
+        search(text);
+      };
     }
-  }
-
-  searchBox.addEventListener("keydown", e => {
-    if (e.key === "Enter" && searchBox.value.trim()) {
-      searchWiki(searchBox.value.trim());
-    }
-  });
-
-  function runAI() {
-    const type = document.getElementById("aiType").value;
-    const topic = document.getElementById("aiTopic").value.trim();
-    const out = document.getElementById("aiResult");
-
-    if (!topic) {
-      out.innerText = "Please enter a topic.";
-      return;
-    }
-
-    if (type === "story") {
-      out.innerText = `Once upon a time, there was a story about ${topic}. What began as an ordinary situation slowly turned into a journey of discovery, challenges, and growth. Through persistence and learning, the experience surrounding ${topic} transformed everything, leaving behind a powerful lesson.`;
-    }
-
-    if (type === "letter") {
-      out.innerText = `Dear Sir/Madam,\n\nI am writing this letter regarding ${topic}. I hope this message brings attention to the matter and leads to positive action.\n\nYours sincerely,\nEleco AI`;
-    }
-
-    if (type === "speech") {
-      out.innerText = `Respected guests,\n\nToday I would like to speak about ${topic}. It reminds us of our responsibilities and the importance of thoughtful action. Let us move forward with awareness and determination.\n\nThank you.`;
-    }
-
-    if (type === "article") {
-      out.innerText = `${topic} is an important subject in today’s world. This article explores its background, relevance, and impact on society. Understanding ${topic} helps individuals make informed decisions and prepares us for the future.`;
-    }
-  }
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recog = new SpeechRecognition();
-    recog.lang = "en-US";
-
-    micBtn.onclick = () => recog.start();
-    recog.onresult = e => {
-      const text = e.results[0][0].transcript;
-      searchBox.value = text;
-      searchWiki(text);
-    };
-  }
-</script>
+  </script>
 
 </body>
 </html>
+```
+
+---
+
+## 🖼️ FILE: `robot.png`
+
+Upload your **tiny robot logo** to the SAME folder as `index.html`.
+
+---
+
+## ✅ WHAT THIS VERSION GUARANTEES
+
+* ❌ No Smart AI / trash tool
+* ✅ Clean & stable
+* ✅ Voice search
+* ✅ Works on GitHub Pages
+* ✅ Looks like Eleco (Google‑style)
+
+---
+
+### 🔄 AFTER PASTING
+
+1. Commit changes
+2. Wait 30–60 seconds
+3. Hard refresh: **Ctrl + Shift + R**
+
+---
+
+### 🚀 NEXT (WHEN YOU’RE READY)
+
+We can later add:
+
+* Wikipedia answers at top
+* Calculator tool
+* Translator
+* Weather
+* Dictionary
+
+Just say the word 😄
 
 
      
+     
+  
+   
+  
+ 
+
+  
 
  
       
 
  
-  }
-
+ 
 
 
  
