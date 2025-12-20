@@ -186,12 +186,57 @@
       const text = e.results[0][0].transcript;
       searchBox.value = text;
       searchWiki(text);
+      <script>
+  const input = document.getElementById("search");
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") webSearch();
+  });
+
+  function webSearch() {
+    go("https://www.google.com/search?q=");
+  }
+
+  function imageSearch() {
+    go("https://www.google.com/search?tbm=isch&q=");
+  }
+
+  function videoSearch() {
+    go("https://www.google.com/search?tbm=vid&q=");
+  }
+
+  function newsSearch() {
+    go("https://www.google.com/search?tbm=nws&q=");
+  }
+
+  function go(base) {
+    if (!input.value) return;
+    window.location.href = base + encodeURIComponent(input.value);
+  }
+
+  function voice() {
+    if (!("webkitSpeechRecognition" in window)) return;
+    const r = new webkitSpeechRecognition();
+    r.lang = "en-IN";
+    r.start();
+    r.onresult = e => {
+      input.value = e.results[0][0].transcript;
+    };
+  }
+</script>
+
     };
   }
 </script>
 
 </body>
 </html>
+<div style="margin-top:25px;">
+  <button onclick="webSearch()">🔍 Web</button>
+  <button onclick="imageSearch()">🖼 Images</button>
+  <button onclick="videoSearch()">🎥 Videos</button>
+  <button onclick="newsSearch()">📰 News</button>
+</div>
 
 
      
@@ -200,7 +245,7 @@
       
 
  
-  }
+  
 
 
 
