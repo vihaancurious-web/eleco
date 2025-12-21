@@ -1,127 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Calculator App</title>
+<title>Superhero Game Hub</title>
 <style>
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, #1c1c1c, #2b2b2b);
-        font-family: Arial, sans-serif;
-    }
+body {
+    margin: 0;
+    background: black;
+    color: white;
+    font-family: Arial;
+    overflow: hidden;
+}
 
-    .calculator {
-        background: #111;
-        padding: 20px;
-        border-radius: 20px;
-        width: 300px;
-        box-shadow: 0 0 25px rgba(0,0,0,0.7);
-    }
+#menu {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(#111, #000);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
-    .display {
-        background: black;
-        color: #00ffcc;
-        font-size: 2em;
-        padding: 15px;
-        border-radius: 10px;
-        text-align: right;
-        overflow-x: auto;
-        margin-bottom: 15px;
-    }
+button {
+    padding: 15px 25px;
+    margin: 8px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #00ffaa;
+}
 
-    .buttons {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-    }
-
-    button {
-        padding: 15px;
-        font-size: 1.2em;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-    }
-
-    .number { background: #222; color: white; }
-    .operator { background: #ff9500; color: white; }
-    .equal { background: #2ecc71; color: black; grid-column: span 2; }
-    .clear { background: #e74c3c; color: white; }
-    .delete { background: #3498db; color: white; }
-
-    button:hover {
-        opacity: 0.85;
-    }
+canvas {
+    display: none;
+    background: linear-gradient(#222, #000);
+}
 </style>
 </head>
 <body>
 
-<div class="calculator">
-    <div class="display" id="display">0</div>
-
-    <div class="buttons">
-        <button class="clear" onclick="clearDisplay()">C</button>
-        <button class="delete" onclick="deleteLast()">⌫</button>
-        <button class="operator" onclick="append('/')">÷</button>
-        <button class="operator" onclick="append('*')">×</button>
-
-        <button class="number" onclick="append('7')">7</button>
-        <button class="number" onclick="append('8')">8</button>
-        <button class="number" onclick="append('9')">9</button>
-        <button class="operator" onclick="append('-')">−</button>
-
-        <button class="number" onclick="append('4')">4</button>
-        <button class="number" onclick="append('5')">5</button>
-        <button class="number" onclick="append('6')">6</button>
-        <button class="operator" onclick="append('+')">+</button>
-
-        <button class="number" onclick="append('1')">1</button>
-        <button class="number" onclick="append('2')">2</button>
-        <button class="number" onclick="append('3')">3</button>
-
-        <button class="number" onclick="append('0')">0</button>
-        <button class="number" onclick="append('.')">.</button>
-        <button class="equal" onclick="calculate()">=</button>
-    </div>
+<div id="menu">
+    <h1>🦸 Superhero Game Hub</h1>
+    <button onclick="startGame('stairs')">🧗 Climb Stairs</button>
+    <button onclick="startGame('jump')">🏢 Jump Building</button>
+    <button onclick="startGame('stars')">🌌 Go To Stars</button>
+    <button onclick="startGame('superman')">🦸‍♂ Superman Mode</button>
+    <button onclick="startGame('spiderman')">🕷 Spiderman Mode</button>
+    <button onclick="startGame('avenger')">🛡 Avenger Mode</button>
 </div>
 
+<canvas id="game" width="900" height="500"></canvas>
+
 <script>
-let display = document.getElementById("display");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const menu = document.getElementById("menu");
 
-function append(value) {
-    if (display.textContent === "0") {
-        display.textContent = value;
-    } else {
-        display.textContent += value;
+let player, gravity, mode, score;
+let keys = {};
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function startGame(selectedMode) {
+    mode = selectedMode;
+    menu.style.display = "none";
+    canvas.style.display = "block";
+    score = 0;
+
+    gravity = (mode === "superman" || mode === "stars") ? 0.1 : 0.6;
+
+    player = {
+        x: 100,
+        y: 400,
+        w: 40,
+        h: 40,
+        vx: 0,
+        vy: 0,
+        color: "cyan"
+    };
+
+    gameLoop();
+}
+
+function update() {
+    score++;
+
+    if (keys["ArrowRight"]) player.vx = 4;
+    else if (keys["ArrowLeft"]) player.vx = -4;
+    else player.vx = 0;
+
+    if (keys[" "] && player.y >= 400) {
+        player.vy = -12;
     }
-}
 
-function clearDisplay() {
-    display.textContent = "0";
-}
-
-function deleteLast() {
-    if (display.textContent.length === 1) {
-        display.textContent = "0";
-    } else {
-        display.textContent = display.textContent.slice(0, -1);
+    if (mode === "superman" || mode === "stars") {
+        if (keys["ArrowUp"]) player.vy = -4;
+        if (keys["ArrowDown"]) player.vy = 4;
     }
+
+    player.vy += gravity;
+    player.x += player.vx;
+    player.y += player.vy;
+
+    if (player.y > 400) {
+        player.y = 400;
+        player.vy = 0;
+    }
+
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
 }
 
-function calculate() {
-    try {
-        display.textContent = eval(display.textContent);
-    } catch {
-        display.textContent = "Error";
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    if (mode === "stars") {
+        ctx.fillStyle = "white";
+        for (let i=0;i<50;i++) {
+            ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height,2,2);
+        }
     }
+
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.w, player.h);
+
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText("Mode: " + mode.toUpperCase(), 20, 30);
+    ctx.fillText("Score: " + score, 20, 55);
+    ctx.fillText("ESC = Menu", 20, 80);
 }
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        location.reload();
+    }
+});
 </script>
 
 </body>
 </html>
 
- 
