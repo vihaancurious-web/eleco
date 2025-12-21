@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Paint App – 50 Colors</title>
+<title>Paint App – Eraser Mode</title>
 <style>
     body {
         margin: 0;
@@ -40,7 +40,7 @@
     .controls {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         margin: 10px;
     }
 
@@ -58,6 +58,10 @@
         font-weight: bold;
     }
 
+    .active {
+        background: #ff6666;
+    }
+
     input[type="range"] {
         width: 120px;
     }
@@ -70,8 +74,9 @@
 
 <!-- CONTROLS -->
 <div class="controls">
-    <label>Brush Size</label>
-    <input type="range" min="1" max="30" value="4" oninput="changeBrush(this.value)">
+    <label>Brush</label>
+    <input type="range" min="1" max="40" value="4" oninput="changeBrush(this.value)">
+    <button id="eraserBtn" onclick="toggleEraser()">Eraser</button>
     <button onclick="clearCanvas()">Clear</button>
 </div>
 
@@ -85,20 +90,22 @@ const colors = [
 "salmon","indigo","violet","turquoise","chocolate","crimson","khaki","lavender","plum","orchid",
 "mintcream","aquamarine","skyblue","deepskyblue","steelblue","royalblue","darkgreen","forestgreen","seagreen","springgreen",
 "tomato","orangered","darkorange","peachpuff","sienna","peru","slategray","darkslateblue","mediumvioletred","hotpink"
-]; // 🔥 50 colors
+]; // 50 colors
 
 const palette = document.getElementById("palette");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const eraserBtn = document.getElementById("eraserBtn");
 
 let drawing = false;
 let currentColor = colors[0];
 let brushSize = 4;
+let eraserMode = false;
 
 ctx.lineCap = "round";
 ctx.lineWidth = brushSize;
 
-// Build palette dynamically
+// Build palette
 colors.forEach((color, index) => {
     const div = document.createElement("div");
     div.className = "color" + (index === 0 ? " selected" : "");
@@ -109,7 +116,10 @@ colors.forEach((color, index) => {
 
 // Select color
 function selectColor(color, element) {
+    eraserMode = false;
+    eraserBtn.classList.remove("active");
     currentColor = color;
+    ctx.globalCompositeOperation = "source-over";
     document.querySelectorAll(".color").forEach(c => c.classList.remove("selected"));
     element.classList.add("selected");
 }
@@ -118,6 +128,13 @@ function selectColor(color, element) {
 function changeBrush(size) {
     brushSize = size;
     ctx.lineWidth = brushSize;
+}
+
+// Toggle eraser
+function toggleEraser() {
+    eraserMode = !eraserMode;
+    eraserBtn.classList.toggle("active", eraserMode);
+    ctx.globalCompositeOperation = eraserMode ? "destination-out" : "source-over";
 }
 
 // Drawing
@@ -140,7 +157,7 @@ function draw(e) {
     ctx.moveTo(e.offsetX, e.offsetY);
 }
 
-// Clear canvas
+// Clear
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -150,8 +167,5 @@ function clearCanvas() {
 </body>
 </html>
 
-       
-
-
-
+ 
  
