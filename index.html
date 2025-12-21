@@ -1,152 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Superhero Game Hub</title>
+<title>Paint App</title>
 <style>
-body {
-    margin: 0;
-    background: black;
-    color: white;
-    font-family: Arial;
-    overflow: hidden;
-}
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #222;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-#menu {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(#111, #000);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+    .palette {
+        display: flex;
+        gap: 10px;
+        padding: 15px;
+        background: #111;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-button {
-    padding: 15px 25px;
-    margin: 8px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #00ffaa;
-}
+    .color {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid #444;
+    }
 
-canvas {
-    display: none;
-    background: linear-gradient(#222, #000);
-}
+    .color.selected {
+        border: 3px solid white;
+    }
+
+    .controls {
+        margin-left: 20px;
+    }
+
+    canvas {
+        background: #fff;
+        margin-top: 10px;
+        border-radius: 10px;
+        cursor: crosshair;
+    }
+
+    button {
+        padding: 8px 15px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
 
-<div id="menu">
-    <h1>🦸 Superhero Game Hub</h1>
-    <button onclick="startGame('stairs')">🧗 Climb Stairs</button>
-    <button onclick="startGame('jump')">🏢 Jump Building</button>
-    <button onclick="startGame('stars')">🌌 Go To Stars</button>
-    <button onclick="startGame('superman')">🦸‍♂ Superman Mode</button>
-    <button onclick="startGame('spiderman')">🕷 Spiderman Mode</button>
-    <button onclick="startGame('avenger')">🛡 Avenger Mode</button>
+<!-- COLOR PALETTE -->
+<div class="palette">
+    <div class="color selected" style="background:red" onclick="selectColor('red', this)"></div>
+    <div class="color" style="background:blue" onclick="selectColor('blue', this)"></div>
+    <div class="color" style="background:green" onclick="selectColor('green', this)"></div>
+    <div class="color" style="background:black" onclick="selectColor('black', this)"></div>
+    <div class="color" style="background:yellow" onclick="selectColor('yellow', this)"></div>
+    <div class="color" style="background:purple" onclick="selectColor('purple', this)"></div>
+    <div class="controls">
+        <button onclick="clearCanvas()">Clear</button>
+    </div>
 </div>
 
-<canvas id="game" width="900" height="500"></canvas>
+<!-- DRAWING AREA -->
+<canvas id="canvas" width="900" height="450"></canvas>
 
 <script>
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const menu = document.getElementById("menu");
 
-let player, gravity, mode, score;
-let keys = {};
+let drawing = false;
+let currentColor = "red";
 
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
+ctx.lineWidth = 4;
+ctx.lineCap = "round";
 
-function startGame(selectedMode) {
-    mode = selectedMode;
-    menu.style.display = "none";
-    canvas.style.display = "block";
-    score = 0;
-
-    gravity = (mode === "superman" || mode === "stars") ? 0.1 : 0.6;
-
-    player = {
-        x: 100,
-        y: 400,
-        w: 40,
-        h: 40,
-        vx: 0,
-        vy: 0,
-        color: "cyan"
-    };
-
-    gameLoop();
+// Color selection
+function selectColor(color, element) {
+    currentColor = color;
+    document.querySelectorAll(".color").forEach(c => c.classList.remove("selected"));
+    element.classList.add("selected");
 }
 
-function update() {
-    score++;
+// Mouse events
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => drawing = false);
+canvas.addEventListener("mouseleave", () => drawing = false);
 
-    if (keys["ArrowRight"]) player.vx = 4;
-    else if (keys["ArrowLeft"]) player.vx = -4;
-    else player.vx = 0;
+canvas.addEventListener("mousemove", draw);
 
-    if (keys[" "] && player.y >= 400) {
-        player.vy = -12;
-    }
+function draw(e) {
+    if (!drawing) return;
 
-    if (mode === "superman" || mode === "stars") {
-        if (keys["ArrowUp"]) player.vy = -4;
-        if (keys["ArrowDown"]) player.vy = 4;
-    }
-
-    player.vy += gravity;
-    player.x += player.vx;
-    player.y += player.vy;
-
-    if (player.y > 400) {
-        player.y = 400;
-        player.vy = 0;
-    }
-
-    if (player.x < 0) player.x = 0;
-    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+    ctx.strokeStyle = currentColor;
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
 }
 
-function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    if (mode === "stars") {
-        ctx.fillStyle = "white";
-        for (let i=0;i<50;i++) {
-            ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height,2,2);
-        }
-    }
-
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-
-    ctx.fillStyle = "white";
-    ctx.font = "18px Arial";
-    ctx.fillText("Mode: " + mode.toUpperCase(), 20, 30);
-    ctx.fillText("Score: " + score, 20, 55);
-    ctx.fillText("ESC = Menu", 20, 80);
+// Clear
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
 }
-
-function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
-
-document.addEventListener("keydown", e => {
-    if (e.key === "Escape") {
-        location.reload();
-    }
-});
 </script>
 
 </body>
 </html>
 
+
+
+     
+ 
