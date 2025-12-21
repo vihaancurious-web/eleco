@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Paint App – Eraser Mode</title>
+<title>Paint App – Undo Redo</title>
 <style>
     body {
         margin: 0;
@@ -40,7 +40,7 @@
     .controls {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         margin: 10px;
     }
 
@@ -51,7 +51,7 @@
     }
 
     button {
-        padding: 8px 15px;
+        padding: 8px 14px;
         border-radius: 8px;
         border: none;
         cursor: pointer;
@@ -77,6 +77,8 @@
     <label>Brush</label>
     <input type="range" min="1" max="40" value="4" oninput="changeBrush(this.value)">
     <button id="eraserBtn" onclick="toggleEraser()">Eraser</button>
+    <button onclick="undo()">Undo</button>
+    <button onclick="redo()">Redo</button>
     <button onclick="clearCanvas()">Clear</button>
 </div>
 
@@ -102,8 +104,18 @@ let currentColor = colors[0];
 let brushSize = 4;
 let eraserMode = false;
 
+// Undo / Redo stacks
+let undoStack = [];
+let redoStack = [];
+
 ctx.lineCap = "round";
 ctx.lineWidth = brushSize;
+
+// Save canvas state
+function saveState() {
+    undoStack.push(canvas.toDataURL());
+    redoStack = [];
+}
 
 // Build palette
 colors.forEach((color, index) => {
@@ -137,35 +149,18 @@ function toggleEraser() {
     ctx.globalCompositeOperation = eraserMode ? "destination-out" : "source-over";
 }
 
-// Drawing
-canvas.addEventListener("mousedown", () => drawing = true);
+// Drawing events
+canvas.addEventListener("mousedown", () => {
+    saveState();
+    drawing = true;
+});
 canvas.addEventListener("mouseup", stopDraw);
 canvas.addEventListener("mouseleave", stopDraw);
 canvas.addEventListener("mousemove", draw);
 
 function stopDraw() {
     drawing = false;
-    ctx.beginPath();
-}
-
-function draw(e) {
-    if (!drawing) return;
-    ctx.strokeStyle = currentColor;
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
-}
-
-// Clear
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-}
-</script>
-
-</body>
-</html>
+    ctx.b
 
  
  
