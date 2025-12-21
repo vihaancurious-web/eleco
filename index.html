@@ -2,135 +2,126 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Stopwatch App</title>
+<title>Calculator App</title>
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #1e1e1e, #333);
-        color: white;
+        margin: 0;
+        height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        margin: 0;
+        background: linear-gradient(135deg, #1c1c1c, #2b2b2b);
+        font-family: Arial, sans-serif;
     }
 
-    .stopwatch {
+    .calculator {
         background: #111;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        width: 320px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.6);
+        padding: 20px;
+        border-radius: 20px;
+        width: 300px;
+        box-shadow: 0 0 25px rgba(0,0,0,0.7);
     }
 
-    .time {
-        font-size: 2.5em;
-        margin-bottom: 20px;
-        letter-spacing: 2px;
+    .display {
+        background: black;
+        color: #00ffcc;
+        font-size: 2em;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: right;
+        overflow-x: auto;
+        margin-bottom: 15px;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
     }
 
     button {
-        padding: 10px 15px;
-        margin: 5px;
-        font-size: 1em;
+        padding: 15px;
+        font-size: 1.2em;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         cursor: pointer;
     }
 
-    .start { background: #2ecc71; color: black; }
-    .stop  { background: #e74c3c; color: white; }
-    .reset { background: #f1c40f; color: black; }
-    .lap   { background: #3498db; color: white; }
+    .number { background: #222; color: white; }
+    .operator { background: #ff9500; color: white; }
+    .equal { background: #2ecc71; color: black; grid-column: span 2; }
+    .clear { background: #e74c3c; color: white; }
+    .delete { background: #3498db; color: white; }
 
-    ul {
-        list-style: none;
-        padding: 0;
-        max-height: 150px;
-        overflow-y: auto;
-        margin-top: 15px;
-        text-align: left;
-    }
-
-    li {
-        padding: 5px;
-        border-bottom: 1px solid #444;
-        font-size: 0.9em;
+    button:hover {
+        opacity: 0.85;
     }
 </style>
 </head>
 <body>
 
-<div class="stopwatch">
-    <div class="time" id="display">00:00:00.000</div>
+<div class="calculator">
+    <div class="display" id="display">0</div>
 
-    <button class="start" onclick="start()">Start</button>
-    <button class="stop" onclick="stop()">Stop</button>
-    <button class="lap" onclick="lap()">Lap</button>
-    <button class="reset" onclick="reset()">Reset</button>
+    <div class="buttons">
+        <button class="clear" onclick="clearDisplay()">C</button>
+        <button class="delete" onclick="deleteLast()">⌫</button>
+        <button class="operator" onclick="append('/')">÷</button>
+        <button class="operator" onclick="append('*')">×</button>
 
-    <ul id="laps"></ul>
+        <button class="number" onclick="append('7')">7</button>
+        <button class="number" onclick="append('8')">8</button>
+        <button class="number" onclick="append('9')">9</button>
+        <button class="operator" onclick="append('-')">−</button>
+
+        <button class="number" onclick="append('4')">4</button>
+        <button class="number" onclick="append('5')">5</button>
+        <button class="number" onclick="append('6')">6</button>
+        <button class="operator" onclick="append('+')">+</button>
+
+        <button class="number" onclick="append('1')">1</button>
+        <button class="number" onclick="append('2')">2</button>
+        <button class="number" onclick="append('3')">3</button>
+
+        <button class="number" onclick="append('0')">0</button>
+        <button class="number" onclick="append('.')">.</button>
+        <button class="equal" onclick="calculate()">=</button>
+    </div>
 </div>
 
 <script>
-let startTime = 0;
-let elapsedTime = 0;
-let timerInterval;
+let display = document.getElementById("display");
 
-function timeToString(time) {
-    let ms = time % 1000;
-    let totalSeconds = Math.floor(time / 1000);
-    let seconds = totalSeconds % 60;
-    let minutes = Math.floor(totalSeconds / 60) % 60;
-    let hours = Math.floor(totalSeconds / 3600);
-
-    return (
-        String(hours).padStart(2, "0") + ":" +
-        String(minutes).padStart(2, "0") + ":" +
-        String(seconds).padStart(2, "0") + "." +
-        String(ms).padStart(3, "0")
-    );
+function append(value) {
+    if (display.textContent === "0") {
+        display.textContent = value;
+    } else {
+        display.textContent += value;
+    }
 }
 
-function start() {
-    if (timerInterval) return;
-
-    startTime = Date.now() - elapsedTime;
-    timerInterval = setInterval(() => {
-        elapsedTime = Date.now() - startTime;
-        document.getElementById("display").textContent = timeToString(elapsedTime);
-    }, 10);
+function clearDisplay() {
+    display.textContent = "0";
 }
 
-function stop() {
-    clearInterval(timerInterval);
-    timerInterval = null;
+function deleteLast() {
+    if (display.textContent.length === 1) {
+        display.textContent = "0";
+    } else {
+        display.textContent = display.textContent.slice(0, -1);
+    }
 }
 
-function reset() {
-    stop();
-    elapsedTime = 0;
-    document.getElementById("display").textContent = "00:00:00.000";
-    document.getElementById("laps").innerHTML = "";
-}
-
-function lap() {
-    if (!elapsedTime) return;
-    const li = document.createElement("li");
-    li.textContent = timeToString(elapsedTime);
-    document.getElementById("laps").appendChild(li);
+function calculate() {
+    try {
+        display.textContent = eval(display.textContent);
+    } catch {
+        display.textContent = "Error";
+    }
 }
 </script>
 
 </body>
 </html>
-
-  
-     
-
-
- 
-
 
  
