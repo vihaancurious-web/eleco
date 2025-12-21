@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Paint App</title>
+<title>Paint App – 50 Colors</title>
 <style>
     body {
         margin: 0;
@@ -15,18 +15,19 @@
     }
 
     .palette {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
         gap: 10px;
         padding: 15px;
         background: #111;
         width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
+        max-width: 900px;
+        justify-items: center;
     }
 
     .color {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         cursor: pointer;
         border: 2px solid #444;
@@ -37,12 +38,14 @@
     }
 
     .controls {
-        margin-left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px;
     }
 
     canvas {
         background: #fff;
-        margin-top: 10px;
         border-radius: 10px;
         cursor: crosshair;
     }
@@ -54,63 +57,82 @@
         cursor: pointer;
         font-weight: bold;
     }
+
+    input[type="range"] {
+        width: 120px;
+    }
 </style>
 </head>
 <body>
 
-<!-- COLOR PALETTE -->
-<div class="palette">
-    <div class="color selected" style="background:red" onclick="selectColor('red', this)"></div>
-    <div class="color selected" style="background:pink" onclick="selectColor('pink', this)"></div>
-    <div class="color selected" style="background:brown" onclick="selectColor('brown', this)"></div>
-      <div class="color" style="background:tan" onclick="selectColor('tan', this)"></div>
-    <div class="color" style="background:cyan" onclick="selectColor('cyan', this)"></div>
-    <div class="color" style="background:teal" onclick="selectColor('teal', this)"></div>
-    <div class="color" style="background:magenta" onclick="selectColor('magenta', this)"></div>
-    <div class="color" style="background:maroon" onclick="selectColor('maroon', this)"></div>
-    <div class="color selected" style="background:beige" onclick="selectColor('beige', this)"></div>
-    <div class="color selected" style="background:grey" onclick="selectColor('grey', this)"></div>
-    <div class="color selected" style="background:orange" onclick="selectColor('orange', this)"></div>
-    <div class="color" style="background:blue" onclick="selectColor('blue', this)"></div>
-    <div class="color" style="background:green" onclick="selectColor('green', this)"></div>
-    <div class="color" style="background:black" onclick="selectColor('black', this)"></div>
-    <div class="color" style="background:yellow" onclick="selectColor('yellow', this)"></div>
-    <div class="color" style="background:purple" onclick="selectColor('purple', this)"></div>
-    <div class="controls">
-        <button onclick="clearCanvas()">Clear</button>
-    </div>
+<!-- PALETTE -->
+<div class="palette" id="palette"></div>
+
+<!-- CONTROLS -->
+<div class="controls">
+    <label>Brush Size</label>
+    <input type="range" min="1" max="30" value="4" oninput="changeBrush(this.value)">
+    <button onclick="clearCanvas()">Clear</button>
 </div>
 
-<!-- DRAWING AREA -->
+<!-- CANVAS -->
 <canvas id="canvas" width="900" height="450"></canvas>
 
 <script>
+const colors = [
+"red","blue","green","black","yellow","purple","orange","pink","brown","gray",
+"cyan","teal","magenta","maroon","tan","lime","navy","olive","coral","gold",
+"salmon","indigo","violet","turquoise","chocolate","crimson","khaki","lavender","plum","orchid",
+"mintcream","aquamarine","skyblue","deepskyblue","steelblue","royalblue","darkgreen","forestgreen","seagreen","springgreen",
+"tomato","orangered","darkorange","peachpuff","sienna","peru","slategray","darkslateblue","mediumvioletred","hotpink"
+]; // 🔥 50 colors
+
+const palette = document.getElementById("palette");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let drawing = false;
-let currentColor = "red";
+let currentColor = colors[0];
+let brushSize = 4;
 
-ctx.lineWidth = 4;
 ctx.lineCap = "round";
+ctx.lineWidth = brushSize;
 
-// Color selection
+// Build palette dynamically
+colors.forEach((color, index) => {
+    const div = document.createElement("div");
+    div.className = "color" + (index === 0 ? " selected" : "");
+    div.style.background = color;
+    div.onclick = () => selectColor(color, div);
+    palette.appendChild(div);
+});
+
+// Select color
 function selectColor(color, element) {
     currentColor = color;
     document.querySelectorAll(".color").forEach(c => c.classList.remove("selected"));
     element.classList.add("selected");
 }
 
-// Mouse events
-canvas.addEventListener("mousedown", () => drawing = true);
-canvas.addEventListener("mouseup", () => drawing = false);
-canvas.addEventListener("mouseleave", () => drawing = false);
+// Brush size
+function changeBrush(size) {
+    brushSize = size;
+    ctx.lineWidth = brushSize;
+}
 
+// Drawing
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", stopDraw);
+canvas.addEventListener("mouseleave", stopDraw);
 canvas.addEventListener("mousemove", draw);
+
+function stopDraw() {
+    drawing = false;
+    ctx.beginPath();
+}
 
 function draw(e) {
     if (!drawing) return;
-
     ctx.strokeStyle = currentColor;
     ctx.lineTo(e.offsetX, e.offsetY);
     ctx.stroke();
@@ -118,7 +140,7 @@ function draw(e) {
     ctx.moveTo(e.offsetX, e.offsetY);
 }
 
-// Clear
+// Clear canvas
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -128,7 +150,8 @@ function clearCanvas() {
 </body>
 </html>
 
+       
 
 
-     
+
  
